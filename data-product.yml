@@ -6,6 +6,93 @@ metadata:
   - schema:
 description:
 input_ports:
+  - id: berlin-lor-geodata
+    metadata:
+      name: Berlin LOR geodata
+      author: Open Lifeworlds
+      url: https://github.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-geodata/tree/main/data
+      license: CC-BY-4.0
+      updated: 2023-07-22
+    files:
+      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-geodata/main/data/berlin-lor-districts/berlin-lor-districts.geojson
+      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-geodata/main/data/berlin-lor-forecast-areas-until-2020/berlin-lor-forecast-areas-until-2020.geojson
+      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-geodata/main/data/berlin-lor-forecast-areas-from-2021/berlin-lor-forecast-areas-from-2021.geojson
+      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-geodata/main/data/berlin-lor-district-regions-until-2020/berlin-lor-district-regions-until-2020.geojson
+      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-geodata/main/data/berlin-lor-district-regions-from-2021/berlin-lor-district-regions-from-2021.geojson
+      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-geodata/main/data/berlin-lor-planning-areas-until-2020/berlin-lor-planning-areas-until-2020.geojson
+      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-geodata/main/data/berlin-lor-planning-areas-from-2021/berlin-lor-planning-areas-from-2021.geojson
+  - id: berlin-lor-housing-stock-2015-00
+    metadata:
+      name: Fortschreibung des Wohngebäude- und Wohnungsbestandes in Berlin 2015
+      author: Amt für Statistik Berlin-Brandenburg
+      url: https://www.statistik-berlin-brandenburg.de/f-i-1-j
+      license: CC-BY-3.0-Namensnennung
+      updated: 2016-07-20
+    files:
+      - https://download.statistik-berlin-brandenburg.de/bd6c147896d2ff60/8bfec78484fb/SB_F01-01-00_2015j01_BE.xlsx
+  - id: berlin-lor-housing-stock-2016-00
+    metadata:
+      name: Fortschreibung des Wohngebäude- und Wohnungsbestandes in Berlin 2016
+      author: Amt für Statistik Berlin-Brandenburg
+      url: https://www.statistik-berlin-brandenburg.de/f-i-1-j
+      license: CC-BY-3.0-Namensnennung
+      updated: 2017-06-23
+    files:
+      - https://download.statistik-berlin-brandenburg.de/ab9a0827a25a2614/7fe2b662af68/SB_F01-01-00_2016j01_BE.xlsx
+  - id: berlin-lor-housing-stock-2017-00
+    metadata:
+      name: Fortschreibung des Wohngebäude- und Wohnungsbestandes in Berlin 2017
+      author: Amt für Statistik Berlin-Brandenburg
+      url: https://www.statistik-berlin-brandenburg.de/f-i-1-j
+      license: CC-BY-3.0-Namensnennung
+      updated: 2018-06-21
+    files:
+      - https://download.statistik-berlin-brandenburg.de/b3ee1cd3b49f141b/bb4d7164a0f2/SB_F01-01-00_2017j01_BE.xlsx
+  - id: berlin-lor-housing-stock-2018-00
+    metadata:
+      name: Fortschreibung des Wohngebäude- und Wohnungsbestandes in Berlin 2018
+      author: Amt für Statistik Berlin-Brandenburg
+      url: https://www.statistik-berlin-brandenburg.de/f-i-1-j
+      license: CC-BY-3.0-Namensnennung
+      updated: 2019-06-28
+    files:
+     - https://download.statistik-berlin-brandenburg.de/a557654b00a58fb3/32cd91bd73de/SB_F01-01-00_2018j01_BE.xlsx
+  - id: berlin-lor-housing-stock-2019-00
+    metadata:
+      name: Fortschreibung des Wohngebäude- und Wohnungsbestandes in Berlin 2019
+      author: Amt für Statistik Berlin-Brandenburg
+      url: https://www.statistik-berlin-brandenburg.de/f-i-1-j
+      license: CC-BY-3.0-Namensnennung
+      updated: 2020-06-24
+    files:
+     - https://download.statistik-berlin-brandenburg.de/fa35212b7514f205/fc5c0f8f8f61/SB_F01-01-00_2019j01_BE.xlsx
+  - id: berlin-lor-housing-stock-2020-00
+    metadata:
+      name: Fortschreibung des Wohngebäude- und Wohnungsbestandes in Berlin 2020
+      author: Amt für Statistik Berlin-Brandenburg
+      url: https://www.statistik-berlin-brandenburg.de/f-i-1-j
+      license: CC-BY-3.0-Namensnennung
+      updated: 2021-07-06
+    files:
+     - https://download.statistik-berlin-brandenburg.de/6fe3f8c8d2c5c55a/d044eff304e4/SB_F01-01-00_2020j01_BE.xlsx
+  - id: berlin-lor-housing-stock-2021-00
+    metadata:
+      name: Fortschreibung des Wohngebäude- und Wohnungsbestandes in Berlin 2021
+      author: Amt für Statistik Berlin-Brandenburg
+      url: https://www.statistik-berlin-brandenburg.de/f-i-1-j
+      license: CC-BY-3.0-Namensnennung
+      updated: 2022-07-12
+    files:
+     - https://download.statistik-berlin-brandenburg.de/490e783d37fff6c7/245ef1180cd8/SB_F01-01-00_2021j01_BE.xlsx
+  - id: berlin-lor-housing-stock-2022-00
+    metadata:
+      name: Fortschreibung des Wohngebäude- und Wohnungsbestandes in Berlin 2022
+      author: Amt für Statistik Berlin-Brandenburg
+      url: https://www.statistik-berlin-brandenburg.de/f-i-1-j
+      license: CC-BY-3.0-Namensnennung
+      updated: 2023-07-18
+    files:
+      - https://download.statistik-berlin-brandenburg.de/fc2a6d8be1b10993/a2816dc7fb02/SB_F01-01-00_2022j01_BE.xlsx
 output_ports:
 metrics:
   - quality:
