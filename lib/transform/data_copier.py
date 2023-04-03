@@ -43,5 +43,7 @@ def get_results_file_name(subdir, source_file_name):
         return "berlin-lor-housing-stock-2020-00.xlsx"
     if source_file_name == "SB_F01-01-00_2021j01_BE.xlsx":
         return "berlin-lor-housing-stock-2021-00.xlsx"
+    if source_file_name == "SB_F01-01-00_2022j01_BE.xlsx":
+        return "berlin-lor-housing-stock-2022-00.xlsx"
     else:
         return source_file_name
