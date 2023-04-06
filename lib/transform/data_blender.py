@@ -10,15 +10,27 @@ from lib.tracking_decorator import TrackingDecorator
 key_figure_group = "berlin-lor-housing-stock"
 
 statistic_properties = [
-    "apartments", "apartments_with_1_room", "apartments_with_2_rooms", "apartments_with_3_rooms",
-    "apartments_with_4_rooms", "apartments_with_5_rooms", "apartments_with_6_rooms",
-    "apartments_with_7_rooms_or_more", "apartments_rooms", "apartments_living_area",
-    "residential_buildings", "residential_buildings_living_area", "residential_buildings_apartments",
-    "residential_buildings_with_1_apartment", "residential_buildings_with_1_apartment_living_area",
-    "residential_buildings_with_2_apartment", "residential_buildings_with_2_apartment_living_area",
-    "residential_buildings_with_2_apartment_apartments",
-    "residential_buildings_with_3_apartment", "residential_buildings_with_3_apartment_living_area",
-    "residential_buildings_with_3_apartment_apartments"
+    "apartments",
+    "apartments_with_1_room",
+    "apartments_with_2_rooms",
+    "apartments_with_3_rooms",
+    "apartments_with_4_rooms",
+    "apartments_with_5_rooms",
+    "apartments_with_6_rooms",
+    "apartments_with_7_rooms_or_more",
+    "apartments_rooms",
+    "apartments_living_area",
+    "residential_buildings",
+    "residential_buildings_living_area",
+    "residential_buildings_apartments",
+    "residential_buildings_with_1_apartment",
+    "residential_buildings_with_1_apartment_living_area",
+    "residential_buildings_with_2_apartments",
+    "residential_buildings_with_2_apartments_living_area",
+    "residential_buildings_with_2_apartments_apartments",
+    "residential_buildings_with_3_apartments",
+    "residential_buildings_with_3_apartments_living_area",
+    "residential_buildings_with_3_apartments_apartments"
 ]
 
 pre_2020_statistics = [

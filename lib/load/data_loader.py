@@ -28,4 +28,4 @@ def load_data(source_path, results_path, clean=False, quiet=False):
                     if not quiet:
                         print(f"✓ Load {file_name}")
                 else:
-                    print(f"✓ Already exists {file_name}")
+                    print(f"✓ Already exists {subdir}/{file_name}")
