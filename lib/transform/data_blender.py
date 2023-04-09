@@ -233,6 +233,8 @@ def extend_districts(statistics, year, half_year, statistic_name, statistic, geo
     # Check if file needs to be created
     for feature in sorted(geojson_extended["features"], key=lambda feature: feature["properties"]["id"]):
         feature_id = feature["properties"]["id"]
+        area_sqm = feature["properties"]["area"]
+        area_sqkm = area_sqm / 1_000_000
 
         # Filter statistics
         statistic_filtered = statistic[statistic["id"].astype(str).str.startswith(feature_id)]
@@ -243,7 +245,7 @@ def extend_districts(statistics, year, half_year, statistic_name, statistic, geo
             continue
 
         # Blend data
-        feature = blend_data_into_feature(feature=feature, statistic=statistic_filtered)
+        feature = blend_data_into_feature(feature=feature, area_sqkm=area_sqkm, statistic=statistic_filtered)
 
         # Build structure
         if year not in statistics:
@@ -278,6 +280,8 @@ def extend_forecast_areas(statistics, year, half_year, statistic_name, statistic
     # Check if file needs to be created
     for feature in sorted(geojson_extended["features"], key=lambda feature: feature["properties"]["id"]):
         feature_id = feature["properties"]["id"]
+        area_sqm = feature["properties"]["area"]
+        area_sqkm = area_sqm / 1_000_000
 
         # Filter statistics
         statistic_filtered = statistic[statistic["id"].astype(str).str.startswith(feature_id)]
@@ -288,7 +292,7 @@ def extend_forecast_areas(statistics, year, half_year, statistic_name, statistic
             continue
 
         # Blend data
-        blend_data_into_feature(feature=feature, statistic=statistic_filtered)
+        blend_data_into_feature(feature=feature, area_sqkm=area_sqkm, statistic=statistic_filtered)
 
         # Build structure
         if year not in statistics:
@@ -323,6 +327,8 @@ def extend_district_regions(statistics, year, half_year, statistic_name, statist
     # Check if file needs to be created
     for feature in sorted(geojson_extended["features"], key=lambda feature: feature["properties"]["id"]):
         feature_id = feature["properties"]["id"]
+        area_sqm = feature["properties"]["area"]
+        area_sqkm = area_sqm / 1_000_000
 
         # Filter statistics
         statistic_filtered = statistic[statistic["id"].astype(str).str.startswith(feature_id)]
@@ -333,7 +339,7 @@ def extend_district_regions(statistics, year, half_year, statistic_name, statist
             continue
 
         # Blend data
-        feature = blend_data_into_feature(feature=feature, statistic=statistic_filtered)
+        feature = blend_data_into_feature(feature=feature, area_sqkm=area_sqkm, statistic=statistic_filtered)
 
         # Build structure
         if year not in statistics:
@@ -368,6 +374,8 @@ def extend_planning_areas(statistics, year, half_year, statistic_name, statistic
     # Check if file needs to be created
     for feature in sorted(geojson_extended["features"], key=lambda feature: feature["properties"]["id"]):
         feature_id = feature["properties"]["id"]
+        area_sqm = feature["properties"]["area"]
+        area_sqkm = area_sqm / 1_000_000
 
         # Filter statistics
         statistic_filtered = statistic[statistic["id"].astype(str).str.startswith(feature_id)]
@@ -378,7 +386,7 @@ def extend_planning_areas(statistics, year, half_year, statistic_name, statistic
             continue
 
         # Blend data
-        feature = blend_data_into_feature(feature=feature, statistic=statistic_filtered)
+        feature = blend_data_into_feature(feature=feature, area_sqkm=area_sqkm, statistic=statistic_filtered)
 
         # Build structure
         if year not in statistics:
@@ -407,17 +415,26 @@ def extend_planning_areas(statistics, year, half_year, statistic_name, statistic
     return geojson_extended, statistics
 
 
-def blend_data_into_feature(feature, statistic):
+def blend_data_into_feature(feature, area_sqkm, statistic):
     # Add new properties
     for property_name in statistic_properties:
-        add_property(feature, statistic, property_name)
+        add_property_with_modifiers(feature, statistic, property_name, area_sqkm)
 
     return feature
 
 
-def add_property(feature, statistics, property_name):
+def add_property_with_modifiers(feature, statistics, property_name, total_area_sqkm):
     if statistics is not None and property_name in statistics:
         try:
             feature["properties"][f"{property_name}"] = float(statistics[property_name].item())
+            if total_area_sqkm is not None:
+                feature["properties"][f"{property_name}_per_sqkm"] = round(
+                    float(statistics[property_name].item()) / total_area_sqkm)
         except ValueError:
             feature["properties"][f"{property_name}"] = 0
+            if total_area_sqkm is not None:
+                feature["properties"][f"{property_name}_per_sqkm"] = 0
+        except TypeError:
+            feature["properties"][f"{property_name}"] = 0
+            if total_area_sqkm is not None:
+                feature["properties"][f"{property_name}_per_sqkm"] = 0
