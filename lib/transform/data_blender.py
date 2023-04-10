@@ -426,10 +426,10 @@ def blend_data_into_feature(feature, area_sqkm, statistic):
 def add_property_with_modifiers(feature, statistics, property_name, total_area_sqkm):
     if statistics is not None and property_name in statistics:
         try:
-            feature["properties"][f"{property_name}"] = float(statistics[property_name].item())
+            feature["properties"][f"{property_name}"] = float(statistics[property_name].sum())
             if total_area_sqkm is not None:
                 feature["properties"][f"{property_name}_per_sqkm"] = round(
-                    float(statistics[property_name].item()) / total_area_sqkm)
+                    float(statistics[property_name].sum()) / total_area_sqkm)
         except ValueError:
             feature["properties"][f"{property_name}"] = 0
             if total_area_sqkm is not None:
