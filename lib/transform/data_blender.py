@@ -4,7 +4,6 @@ import re
 import statistics as stats
 
 import pandas as pd
-from tqdm import tqdm
 
 from lib.tracking_decorator import TrackingDecorator
 
@@ -61,7 +60,7 @@ def blend_data(source_path, results_path, clean=False, quiet=False):
         json_statistics = {}
 
         # Iterate over statistics
-        for statistics_name in tqdm(sorted(statistics), desc=f"Blend statistics for {lor_area_type}", unit="statistic"):
+        for statistics_name in sorted(statistics):
             year = re.search(r"\b\d{4}\b", statistics_name).group()
             half_year = re.search(r"\b\d{2}(?<!\d{4})\b", statistics_name).group()
 
@@ -182,6 +181,7 @@ def extend(year, half_year, geojson, statistics_name, statistics, json_statistic
     :param statistics:
     :param json_statistics:
     :param json_statistics_all:
+    :param json_statistics_population:
     :return:
     """
 
@@ -200,8 +200,7 @@ def extend(year, half_year, geojson, statistics_name, statistics, json_statistic
         statistic_filtered = statistics[statistics["id"].astype(str).str.startswith(feature_id)]
 
         # Check for missing data
-        if statistic_filtered.shape[0] == 0 or \
-                inhabitants is None or inhabitants == 0:
+        if statistic_filtered.shape[0] == 0:
             print(f"✗️ No data in {statistics_name} for id={feature_id}")
             continue
 
@@ -293,5 +292,5 @@ def get_inhabitants(population_statistics, year, feature_id):
     try:
         return population_statistics[year]["02"][feature_id]["inhabitants"]
     except KeyError:
-        print(f"✗️ No population data for id={feature_id}")
+        # print(f"✗️ No population data for id={feature_id}")
         return None
