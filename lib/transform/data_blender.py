@@ -1,7 +1,6 @@
 import json
 import os
 import re
-import statistics as stats
 
 import pandas as pd
 
@@ -50,14 +49,16 @@ def blend_data(source_path, results_path, clean=False, quiet=False):
     # Make results path
     os.makedirs(os.path.join(results_path), exist_ok=True)
 
+    # Load population statistics
+    json_statistics_population = load_population_statistics(
+        os.path.join(os.path.join(source_path, "berlin-lor-population-statistics"),
+                     f"berlin-lor-population-statistics.json"))
+
     # Initialize statistics
-    json_statistics_all = {}
+    json_statistics = {}
 
     # Iterate over LOR area types
     for lor_area_type in ["districts", "forecast-areas", "district-regions", "planning-areas"]:
-
-        # Initialize statistics
-        json_statistics = {}
 
         # Iterate over statistics
         for statistics_name in sorted(statistics):
@@ -81,20 +82,14 @@ def blend_data(source_path, results_path, clean=False, quiet=False):
             # Load statistics
             csv_statistics = read_csv_file(os.path.join(source_path, statistics_name, f"{statistics_name}.csv"))
 
-            # Load population statistics
-            json_statistics_population = load_population_statistics(
-                os.path.join(os.path.join(source_path, "berlin-lor-population-statistics"),
-                             f"berlin-lor-population-{lor_area_type}-statistics.json"))
-
             # Extend geojson
             extend(
                 year=year,
                 half_year=half_year,
                 geojson=geojson,
                 statistics_name=statistics_name,
-                statistics=csv_statistics,
+                csv_statistics=csv_statistics,
                 json_statistics=json_statistics,
-                json_statistics_all=json_statistics_all,
                 json_statistics_population=json_statistics_population
             )
 
@@ -108,22 +103,12 @@ def blend_data(source_path, results_path, clean=False, quiet=False):
                 quiet=quiet
             )
 
-        # Write json statistics file
-        write_json_file(
-            file_path=os.path.join(results_path, f"{key_figure_group}-statistics",
-                                   f"{key_figure_group}-{lor_area_type}-statistics.json"),
-            statistic_name=f"{key_figure_group}-{lor_area_type}-statistics",
-            json_content=json_statistics,
-            clean=clean,
-            quiet=quiet
-        )
-
     # Write json statistics file
     write_json_file(
         file_path=os.path.join(results_path, f"{key_figure_group}-statistics",
                                f"{key_figure_group}-statistics.json"),
         statistic_name=f"{key_figure_group}-statistics",
-        json_content=json_statistics_all,
+        json_content=json_statistics,
         clean=clean,
         quiet=quiet
     )
@@ -170,26 +155,24 @@ def write_json_file(file_path, statistic_name, json_content, clean, quiet):
                 print(f"✓ Aggregate data from {statistic_name} into {os.path.basename(file_path)}")
 
 
-def extend(year, half_year, geojson, statistics_name, statistics, json_statistics, json_statistics_all,
-           json_statistics_population):
+def extend(year, half_year, geojson, statistics_name, csv_statistics, json_statistics, json_statistics_population):
     """
     Extends geojson and json-statistics by statistical values
     :param year:
     :param half_year:
     :param geojson:
     :param statistics_name:
-    :param statistics:
+    :param csv_statistics:
     :param json_statistics:
-    :param json_statistics_all:
     :param json_statistics_population:
     :return:
     """
 
     # Check for missing files
-    if statistics is None:
+    if csv_statistics is None:
         print(f"✗️ No data in {statistics_name}")
 
-    # Check if file needs to be created
+    # Iterate over features
     for feature in sorted(geojson["features"], key=lambda feature: feature["properties"]["id"]):
         feature_id = feature["properties"]["id"]
         area_sqm = feature["properties"]["area"]
@@ -197,7 +180,7 @@ def extend(year, half_year, geojson, statistics_name, statistics, json_statistic
         inhabitants = get_inhabitants(json_statistics_population, year, feature_id)
 
         # Filter statistics
-        statistic_filtered = statistics[statistics["id"].astype(str).str.startswith(feature_id)]
+        statistic_filtered = csv_statistics[csv_statistics["id"].astype(str).str.startswith(feature_id)]
 
         # Check for missing data
         if statistic_filtered.shape[0] == 0:
@@ -207,11 +190,9 @@ def extend(year, half_year, geojson, statistics_name, statistics, json_statistic
         # Blend data
         blend_data_into_feature(feature, statistic_filtered, area_sqkm, inhabitants)
         blend_data_into_json(year, half_year, feature_id, feature, json_statistics)
-        blend_data_into_json(year, half_year, feature_id, feature, json_statistics_all)
 
-    # Calculate averages and median
-    calculate_average_and_median(json_statistics)
-    calculate_average_and_median(json_statistics_all)
+    # Calculate averages
+    calculate_averages(year, half_year, geojson, csv_statistics, json_statistics, json_statistics_population)
 
 
 def blend_data_into_feature(feature, statistics, area_sqkm, inhabitants):
@@ -233,20 +214,22 @@ def blend_data_into_json(year, half_year, feature_id, feature, json_statistics):
     json_statistics[year][half_year][feature_id] = feature["properties"]
 
 
-def calculate_average_and_median(json_statistics):
-    for year, half_years in json_statistics.items():
-        for half_year, feature_ids in half_years.items():
-            values = {}
+def calculate_averages(year, half_year, geojson, csv_statistics, json_statistics, json_statistics_population):
+    # Calculate total values
+    total_sqkm = get_total_sqkm(geojson)
+    total_inhabitants = get_total_inhabitants(year, half_year, json_statistics_population)
 
-            for feature_id, properties in feature_ids.items():
-                for property_name, property_value in properties.items():
-                    if property_name in statistic_properties:
-                        if property_name not in values:
-                            values[property_name] = []
-                        values[property_name].append(property_value)
+    values = {}
 
-            json_statistics[year][half_year]["average"] = {key: stats.mean(lst) for key, lst in values.items()}
-            json_statistics[year][half_year]["median"] = {key: stats.median(lst) for key, lst in values.items()}
+    # Iterate over properties
+    for property_name in [property_name for property_name in statistic_properties if property_name in csv_statistics]:
+        values[property_name] = sum(csv_statistics[property_name])
+
+    json_statistics[year][half_year]["total"] = values
+    json_statistics[year][half_year]["total_per_sqkm"] = \
+        {property_name: total / total_sqkm for property_name, total in values.items()}
+    json_statistics[year][half_year]["total_per_inhabitants"] = \
+        {property_name: total / total_inhabitants for property_name, total in values.items()}
 
 
 def add_property(feature, statistics, property_name):
@@ -294,3 +277,11 @@ def get_inhabitants(population_statistics, year, feature_id):
     except KeyError:
         # print(f"✗️ No population data for id={feature_id}")
         return None
+
+
+def get_total_sqkm(geojson):
+    return sum(feature["properties"]["area"] / 1_000_000 for feature in geojson["features"])
+
+
+def get_total_inhabitants(year, half_year, json_statistics_population):
+    return json_statistics_population[year]["02"]["total"]["inhabitants"]
