@@ -15,7 +15,7 @@ following URLs
 * [berlin-lor-planning-areas-until-2020/berlin-lor-planning-areas-until-2020.geojson](https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-geodata/main/data/berlin-lor-planning-areas-until-2020/berlin-lor-planning-areas-until-2020.geojson)
 * [berlin-lor-planning-areas-from-2021/berlin-lor-planning-areas-from-2021.geojson](https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-geodata/main/data/berlin-lor-planning-areas-from-2021/berlin-lor-planning-areas-from-2021.geojson)
 
-and statistical population data provided
+and statistical housing stock data provided
 by [Amt für Statistik Berlin-Brandenburg](https://www.statistik-berlin-brandenburg.de/) available under the following
 URLs
 
@@ -90,10 +90,7 @@ Additionally, data blended into geojson is available under the following URLs
 
 Additionally, statistics are available under the following URLs
 
-* [berlin-lor-housing-stock-statistics/berlin-lor-housing-stock-district-regions-statistics.json](https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-statistics/berlin-lor-housing-stock-district-regions-statistics.json)
-* [berlin-lor-housing-stock-statistics/berlin-lor-housing-stock-districts-statistics.json](https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-statistics/berlin-lor-housing-stock-districts-statistics.json)
-* [berlin-lor-housing-stock-statistics/berlin-lor-housing-stock-forecast-areas-statistics.json](https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-statistics/berlin-lor-housing-stock-forecast-areas-statistics.json)
-* [berlin-lor-housing-stock-statistics/berlin-lor-housing-stock-planning-areas-statistics.json](https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-statistics/berlin-lor-housing-stock-planning-areas-statistics.json)
+* [berlin-lor-housing-stock-statistics/berlin-lor-housing-stock-statistics.json](https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-statistics/berlin-lor-housing-stock-statistics.json)
 
 ## Metadata
 
