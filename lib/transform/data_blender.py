@@ -114,47 +114,6 @@ def blend_data(source_path, results_path, clean=False, quiet=False):
     )
 
 
-def read_csv_file(file_path):
-    if os.path.exists(file_path):
-        with open(file_path, "r") as csv_file:
-            return pd.read_csv(csv_file, dtype={"id": "str"})
-    else:
-        return None
-
-
-def read_geojson_file(file_path):
-    with open(file=file_path, mode="r", encoding="utf-8") as geojson_file:
-        return json.load(geojson_file, strict=False)
-
-
-def write_geojson_file(file_path, statistic_name, geojson_content, clean, quiet):
-    if not os.path.exists(file_path) or clean:
-
-        # Make results path
-        path_name = os.path.dirname(file_path)
-        os.makedirs(os.path.join(path_name), exist_ok=True)
-
-        with open(file_path, "w", encoding="utf-8") as geojson_file:
-            json.dump(geojson_content, geojson_file, ensure_ascii=False)
-
-            if not quiet:
-                print(f"✓ Blend data from {statistic_name} into {os.path.basename(file_path)}")
-
-
-def write_json_file(file_path, statistic_name, json_content, clean, quiet):
-    if not os.path.exists(file_path) or clean:
-
-        # Make results path
-        path_name = os.path.dirname(file_path)
-        os.makedirs(os.path.join(path_name), exist_ok=True)
-
-        with open(file_path, "w", encoding="utf-8") as json_file:
-            json.dump(json_content, json_file, ensure_ascii=False)
-
-            if not quiet:
-                print(f"✓ Aggregate data from {statistic_name} into {os.path.basename(file_path)}")
-
-
 def extend(year, half_year, geojson, statistics_name, csv_statistics, json_statistics, json_statistics_population):
     """
     Extends geojson and json-statistics by statistical values
@@ -171,6 +130,7 @@ def extend(year, half_year, geojson, statistics_name, csv_statistics, json_stati
     # Check for missing files
     if csv_statistics is None:
         print(f"✗️ No data in {statistics_name}")
+        return
 
     # Iterate over features
     for feature in sorted(geojson["features"], key=lambda feature: feature["properties"]["id"]):
@@ -285,3 +245,44 @@ def get_total_sqkm(geojson):
 
 def get_total_inhabitants(year, half_year, json_statistics_population):
     return json_statistics_population[year]["02"]["total"]["inhabitants"]
+
+
+def read_csv_file(file_path):
+    if os.path.exists(file_path):
+        with open(file_path, "r") as csv_file:
+            return pd.read_csv(csv_file, dtype={"id": "str"})
+    else:
+        return None
+
+
+def read_geojson_file(file_path):
+    with open(file=file_path, mode="r", encoding="utf-8") as geojson_file:
+        return json.load(geojson_file, strict=False)
+
+
+def write_geojson_file(file_path, statistic_name, geojson_content, clean, quiet):
+    if not os.path.exists(file_path) or clean:
+
+        # Make results path
+        path_name = os.path.dirname(file_path)
+        os.makedirs(os.path.join(path_name), exist_ok=True)
+
+        with open(file_path, "w", encoding="utf-8") as geojson_file:
+            json.dump(geojson_content, geojson_file, ensure_ascii=False)
+
+            if not quiet:
+                print(f"✓ Blend data from {statistic_name} into {os.path.basename(file_path)}")
+
+
+def write_json_file(file_path, statistic_name, json_content, clean, quiet):
+    if not os.path.exists(file_path) or clean:
+
+        # Make results path
+        path_name = os.path.dirname(file_path)
+        os.makedirs(os.path.join(path_name), exist_ok=True)
+
+        with open(file_path, "w", encoding="utf-8") as json_file:
+            json.dump(json_content, json_file, ensure_ascii=False)
+
+            if not quiet:
+                print(f"✓ Aggregate data from {statistic_name} into {os.path.basename(file_path)}")
