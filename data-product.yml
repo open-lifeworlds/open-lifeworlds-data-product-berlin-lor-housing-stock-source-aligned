@@ -127,7 +127,7 @@ input_ports:
 output_ports:
   - id: berlin-lor-housing-stock-csv
     metadata:
-      name: Berlin LOR housing stock-csv
+      name: Berlin LOR housing stock csv
       author: Open Lifeworlds
       url: https://github.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/tree/main/data
       license: CC-BY-4.0
@@ -143,7 +143,7 @@ output_ports:
       - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2022-00/berlin-lor-housing-stock-2022-00.csv
   - id: berlin-lor-housing-stock-geojson
     metadata:
-      name: Berlin LOR housing stock-geojson
+      name: Berlin LOR housing stock geojson
       author: Open Lifeworlds
       url: https://github.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/tree/main/data
       license: CC-BY-4.0
@@ -183,7 +183,7 @@ output_ports:
       - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2022-00/berlin-lor-housing-stock-2022-00-planning-areas.geojson
   - id: berlin-lor-housing-stock-statistics
     metadata:
-      name: Berlin LOR housing stock-statistics
+      name: Berlin LOR housing stock statistics
       author: Open Lifeworlds
       url: https://github.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/tree/main/data
       license: CC-BY-4.0
