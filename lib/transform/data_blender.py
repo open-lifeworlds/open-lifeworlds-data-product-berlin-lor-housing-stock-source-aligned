@@ -181,21 +181,22 @@ def calculate_averages(year, half_year, geojson, csv_statistics, json_statistics
 
     values = {}
 
-    # Iterate over properties
-    for property_name in [property_name for property_name in statistic_properties if property_name in csv_statistics]:
-        values[property_name] = sum(csv_statistics[property_name])
+    values |= {property_name: sum(csv_statistics[property_name]) for property_name in statistic_properties if
+               property_name in csv_statistics}
+    if total_sqkm is not None:
+        values |= {f"{property_name}_per_sqkm": total / total_sqkm
+                   for property_name, total in values.items()}
+    if total_inhabitants is not None:
+        values |= {f"{property_name}_per_inhabitant": total / total_inhabitants
+                   for property_name, total in values.items()}
 
-    json_statistics[year][half_year]["total"] = values
-    json_statistics[year][half_year]["total_per_sqkm"] = \
-        {property_name: total / total_sqkm for property_name, total in values.items()}
-    json_statistics[year][half_year]["total_per_inhabitant"] = \
-        {property_name: total / total_inhabitants for property_name, total in values.items()}
+    json_statistics[year][half_year][0] = values
 
 
 def add_property(feature, statistics, property_name):
     if statistics is not None and property_name in statistics:
         try:
-            feature["properties"][f"{property_name}"] = float(statistics[property_name].sum())
+            feature["properties"][f"{property_name}"] = int(statistics[property_name].sum())
         except ValueError:
             feature["properties"][f"{property_name}"] = 0
 
@@ -203,7 +204,7 @@ def add_property(feature, statistics, property_name):
 def add_property_with_modifiers(feature, statistics, property_name, total_area_sqkm, inhabitants):
     if statistics is not None and property_name in statistics:
         try:
-            feature["properties"][f"{property_name}"] = float(statistics[property_name].sum())
+            feature["properties"][f"{property_name}"] = int(statistics[property_name].sum())
             if total_area_sqkm is not None:
                 feature["properties"][f"{property_name}_per_sqkm"] = round(
                     float(statistics[property_name].sum()) / total_area_sqkm, 2)
@@ -244,7 +245,7 @@ def get_total_sqkm(geojson):
 
 
 def get_total_inhabitants(year, half_year, json_statistics_population):
-    return json_statistics_population[year]["02"]["total"]["inhabitants"]
+    return json_statistics_population[year]["02"]["0"]["inhabitants"]
 
 
 def read_csv_file(file_path):
@@ -274,6 +275,7 @@ def write_geojson_file(file_path, statistic_name, geojson_content, clean, quiet)
                 print(f"✓ Blend data from {statistic_name} into {os.path.basename(file_path)}")
     else:
         print(f"✓ Already exists {os.path.basename(file_path)}")
+
 
 def write_json_file(file_path, statistic_name, json_content, clean, quiet):
     if not os.path.exists(file_path) or clean:
