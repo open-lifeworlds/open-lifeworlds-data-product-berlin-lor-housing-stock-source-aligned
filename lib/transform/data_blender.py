@@ -1,6 +1,7 @@
 import copy
 import json
 import os
+import re
 import statistics as stats
 
 import pandas as pd
@@ -33,17 +34,15 @@ statistic_properties = [
     "residential_buildings_with_3_apartments_apartments"
 ]
 
-pre_2020_statistics = [
-    ["berlin-lor-housing-stock-2015-00", "berlin-lor-housing-stock-2015-00"],
-    ["berlin-lor-housing-stock-2016-00", "berlin-lor-housing-stock-2016-00"],
-    ["berlin-lor-housing-stock-2017-00", "berlin-lor-housing-stock-2017-00"],
-    ["berlin-lor-housing-stock-2018-00", "berlin-lor-housing-stock-2018-00"],
-    ["berlin-lor-housing-stock-2019-00", "berlin-lor-housing-stock-2019-00"],
-    ["berlin-lor-housing-stock-2020-00", "berlin-lor-housing-stock-2020-00"],
-
-    # Post-2020 keep pre-2020 nomenclature
-    ["berlin-lor-housing-stock-2021-00", "berlin-lor-housing-stock-2021-00"],
-    ["berlin-lor-housing-stock-2022-00", "berlin-lor-housing-stock-2022-00"]
+statistics = [
+    f"{key_figure_group}-2015-00",
+    f"{key_figure_group}-2016-00",
+    f"{key_figure_group}-2017-00",
+    f"{key_figure_group}-2018-00",
+    f"{key_figure_group}-2019-00",
+    f"{key_figure_group}-2020-00",
+    f"{key_figure_group}-2021-00",
+    f"{key_figure_group}-2022-00"
 ]
 
 
@@ -52,157 +51,73 @@ def blend_data(source_path, results_path, clean=False, quiet=False):
     # Make results path
     os.makedirs(os.path.join(results_path), exist_ok=True)
 
-    source_geodata_path = os.path.join(source_path, "berlin-lor-geodata")
-    source_population_statistics_path = os.path.join(source_path, "berlin-lor-population-statistics")
+    # Iterate over LOR area types
+    for lor_area_type in ["districts", "forecast-areas", "district-regions", "planning-areas"]:
 
-    # Statistics
-    statistics_lor_districts = {}
-    statistics_lor_forecast_areas = {}
-    statistics_lor_district_regions = {}
-    statistics_lor_planning_areas = {}
+        # Initialize statistics
+        json_statistics = {}
 
-    # Load geojson
-    geojson_lor_districts = read_geojson_file(os.path.join(source_geodata_path, "berlin-lor-districts.geojson"))
-    geojson_lor_forecast_areas = read_geojson_file(
-        os.path.join(source_geodata_path, "berlin-lor-forecast-areas-until-2020.geojson"))
-    geojson_lor_district_regions = read_geojson_file(
-        os.path.join(source_geodata_path, "berlin-lor-district-regions-until-2020.geojson"))
-    geojson_lor_planning_areas = read_geojson_file(
-        os.path.join(source_geodata_path, "berlin-lor-planning-areas-until-2020.geojson"))
+        # Iterate over statistics
+        for statistics_name in statistics:
+            year = re.search(r"\b\d{4}\b", statistics_name).group()
+            half_year = re.search(r"\b\d{2}(?<!\d{4})\b", statistics_name).group()
 
-    # Load population statistics
-    population_statistics_districts = load_population_statistics(
-        os.path.join(source_population_statistics_path, "berlin-lor-population-districts-statistics.json"))
-    population_statistics_forecast_areas = load_population_statistics(
-        os.path.join(source_population_statistics_path, "berlin-lor-population-forecast-areas-statistics.json"))
-    population_statistics_district_regions = load_population_statistics(
-        os.path.join(source_population_statistics_path, "berlin-lor-population-district-regions-statistics.json"))
-    population_statistics_planning_areas = load_population_statistics(
-        os.path.join(source_population_statistics_path, "berlin-lor-population-planning-areas-statistics.json"))
+            # Load geojson
+            if lor_area_type == "districts":
+                geojson = read_geojson_file(
+                    os.path.join(source_path, "berlin-lor-geodata", f"berlin-lor-{lor_area_type}.geojson"))
+            elif int(year) <= 2020:
+                geojson = read_geojson_file(
+                    os.path.join(source_path, "berlin-lor-geodata", f"berlin-lor-{lor_area_type}-until-2020.geojson"))
+            elif int(year) >= 2021:
+                # Beware: This statistics use the until-2020 nomenclature even beyond 2020
+                geojson = read_geojson_file(
+                    os.path.join(source_path, "berlin-lor-geodata", f"berlin-lor-{lor_area_type}-until-2020.geojson"))
+            else:
+                geojson = None
 
-    # Iterate over statistics
-    for statistic_path, statistic_name in pre_2020_statistics:
-        year = statistic_name.split(sep="-")[4]
-        half_year = statistic_name.split(sep="-")[5]
+            # Load statistics
+            csv_statistics = read_csv_file(os.path.join(source_path, statistics_name, f"{statistics_name}.csv"))
 
-        # Load statistics
-        statistic = read_csv_file(os.path.join(source_path, statistic_path, f"{statistic_name}.csv"))
+            # Load population statistics
+            json_statistics_population = load_population_statistics(
+                os.path.join(os.path.join(source_path, "berlin-lor-population-statistics"),
+                             f"berlin-lor-population-{lor_area_type}-statistics.json"))
 
-        # Extend districts
-        geojson_lor_districts_extended, statistics_lor_districts = extend_districts(
-            statistics=statistics_lor_districts,
-            year=year,
-            half_year=half_year,
-            statistic_name=statistic_name,
-            statistic=statistic,
-            geojson=geojson_lor_districts,
-            population_statistics=population_statistics_districts
-        )
+            # Extend geojson
+            geojson_extended, json_statistics = extend_geojson(
+                year=year,
+                half_year=half_year,
+                geojson=geojson,
+                statistics_name=statistics_name,
+                statistics=csv_statistics,
+                json_statistics=json_statistics,
+                json_statistics_population=json_statistics_population
+            )
 
-        # Extend forecast areas
-        geojson_lor_forecast_areas_extended, statistics_lor_forecast_areas = extend_forecast_areas(
-            statistics=statistics_lor_forecast_areas,
-            year=year,
-            half_year=half_year,
-            statistic_name=statistic_name,
-            statistic=statistic,
-            geojson=geojson_lor_forecast_areas,
-            population_statistics=population_statistics_forecast_areas
-        )
+            # Write geojson file
+            write_geojson_file(
+                file_path=os.path.join(results_path, statistics_name,
+                                       f"{key_figure_group}-{year}-{half_year}-{lor_area_type}.geojson"),
+                statistic_name=f"{key_figure_group}-{year}-{half_year}-{lor_area_type}",
+                geojson_content=geojson_extended,
+                clean=clean,
+                quiet=quiet
+            )
 
-        # Extend district regions
-        geojson_lor_district_regions_extended, statistics_lor_district_regions = extend_district_regions(
-            statistics=statistics_lor_district_regions,
-            year=year,
-            half_year=half_year,
-            statistic_name=statistic_name,
-            statistic=statistic,
-            geojson=geojson_lor_district_regions,
-            population_statistics=population_statistics_district_regions
-        )
-
-        # Extend planning areas
-        geojson_lor_planning_areas_extended, statistics_lor_planning_areas = extend_planning_areas(
-            statistics=statistics_lor_planning_areas,
-            year=year,
-            half_year=half_year,
-            statistic_name=statistic_name,
-            statistic=statistic,
-            geojson=geojson_lor_planning_areas,
-            population_statistics=population_statistics_planning_areas
-        )
-
-        # Write geojson files
-        write_geojson_file(
-            file_path=os.path.join(results_path, statistic_path,
-                                   f"{key_figure_group}-{year}-{half_year}-districts.geojson"),
-            statistic_name=f"{key_figure_group}-{year}-{half_year}-districts",
-            geojson_content=geojson_lor_districts_extended,
+        # Write json statistics file
+        write_json_file(
+            file_path=os.path.join(results_path, f"{key_figure_group}-statistics",
+                                   f"{key_figure_group}-{lor_area_type}-statistics.json"),
+            statistic_name=f"{key_figure_group}-{lor_area_type}-statistics",
+            json_content=json_statistics,
             clean=clean,
             quiet=quiet
         )
-        write_geojson_file(
-            file_path=os.path.join(results_path, statistic_path,
-                                   f"{key_figure_group}-{year}-{half_year}-forecast-areas.geojson"),
-            statistic_name=f"{key_figure_group}-{year}-{half_year}-forecast-areas",
-            geojson_content=geojson_lor_forecast_areas_extended,
-            clean=clean,
-            quiet=quiet
-        )
-        write_geojson_file(
-            file_path=os.path.join(results_path, statistic_path,
-                                   f"{key_figure_group}-{year}-{half_year}-district-regions.geojson"),
-            statistic_name=f"{key_figure_group}-{year}-{half_year}-district-regions",
-            geojson_content=geojson_lor_district_regions_extended,
-            clean=clean,
-            quiet=quiet
-        )
-        write_geojson_file(
-            file_path=os.path.join(results_path, statistic_path,
-                                   f"{key_figure_group}-{year}-{half_year}-planning-areas.geojson"),
-            statistic_name=f"{key_figure_group}-{year}-{half_year}-planning-areas",
-            geojson_content=geojson_lor_planning_areas_extended,
-            clean=clean,
-            quiet=quiet
-        )
-
-    # Write json file
-    write_json_file(
-        file_path=os.path.join(results_path, f"{key_figure_group}-statistics",
-                               f"{key_figure_group}-districts-statistics.json"),
-        statistic_name=f"{key_figure_group}-districts-statistics",
-        json_content=statistics_lor_districts,
-        clean=clean,
-        quiet=quiet
-    )
-    write_json_file(
-        file_path=os.path.join(results_path, f"{key_figure_group}-statistics",
-                               f"{key_figure_group}-forecast-areas-statistics.json"),
-        statistic_name=f"{key_figure_group}-forecast-areas-statistics",
-        json_content=statistics_lor_forecast_areas,
-        clean=clean,
-        quiet=quiet
-    )
-    write_json_file(
-        file_path=os.path.join(results_path, f"{key_figure_group}-statistics",
-                               f"{key_figure_group}-district-regions-statistics.json"),
-        statistic_name=f"{key_figure_group}-district-regions-statistics",
-        json_content=statistics_lor_district_regions,
-        clean=clean,
-        quiet=quiet
-    )
-    write_json_file(
-        file_path=os.path.join(results_path, f"{key_figure_group}-statistics",
-                               f"{key_figure_group}-planning-areas-statistics.json"),
-        statistic_name=f"{key_figure_group}-planning-areas-statistics",
-        json_content=statistics_lor_planning_areas,
-        clean=clean,
-        quiet=quiet
-    )
 
 
 def read_csv_file(file_path):
-    if "None" not in file_path:
+    if os.path.exists(file_path):
         with open(file_path, "r") as csv_file:
             return pd.read_csv(csv_file, dtype={"id": "str"})
     else:
@@ -242,39 +157,44 @@ def write_json_file(file_path, statistic_name, json_content, clean, quiet):
                 print(f"✓ Aggregate data from {statistic_name} into {os.path.basename(file_path)}")
 
 
-def extend_districts(statistics, year, half_year, statistic_name, statistic, geojson, population_statistics):
+def extend_geojson(year, half_year, geojson, statistics_name, statistics, json_statistics, json_statistics_population):
     geojson_extended = copy.deepcopy(geojson)
+
+    # Check for missing files
+    if statistics is None:
+        print(f"✗️ No data in {statistics_name}")
 
     # Check if file needs to be created
     for feature in sorted(geojson_extended["features"], key=lambda feature: feature["properties"]["id"]):
         feature_id = feature["properties"]["id"]
         area_sqm = feature["properties"]["area"]
         area_sqkm = area_sqm / 1_000_000
-        inhabitants = get_inhabitants(population_statistics, year, feature_id)
+        inhabitants = get_inhabitants(json_statistics_population, year, feature_id)
 
         # Filter statistics
-        statistic_filtered = statistic[statistic["id"].astype(str).str.startswith(feature_id)]
+        statistic_filtered = statistics[statistics["id"].astype(str).str.startswith(feature_id)]
 
         # Check for missing data
-        if statistic_filtered.shape[0] == 0:
-            print(f"✗️ No district data in {statistic_name} for id={feature_id}")
+        if statistic_filtered.shape[0] == 0 or \
+                inhabitants is None or inhabitants == 0:
+            print(f"✗️ No data in {statistics_name} for id={feature_id}")
             continue
 
         # Blend data
-        feature = blend_data_into_feature(feature=feature, area_sqkm=area_sqkm, inhabitants=inhabitants,
-                                          statistic=statistic_filtered)
+        feature = blend_data_into_feature(feature=feature, statistics=statistic_filtered, area_sqkm=area_sqkm,
+                                          inhabitants=inhabitants)
 
         # Build structure
-        if year not in statistics:
-            statistics[year] = {}
-        if half_year not in statistics[year]:
-            statistics[year][half_year] = {}
+        if year not in json_statistics:
+            json_statistics[year] = {}
+        if half_year not in json_statistics[year]:
+            json_statistics[year][half_year] = {}
 
         # Add properties
-        statistics[year][half_year][feature_id] = feature["properties"]
+        json_statistics[year][half_year][feature_id] = feature["properties"]
 
     # Calculate average and median values
-    for year, half_years in statistics.items():
+    for year, half_years in json_statistics.items():
         for half_year, feature_ids in half_years.items():
             values = {}
 
@@ -285,158 +205,52 @@ def extend_districts(statistics, year, half_year, statistic_name, statistic, geo
                             values[property_name] = []
                         values[property_name].append(property_value)
 
-            statistics[year][half_year]["average"] = {key: stats.mean(lst) for key, lst in values.items()}
-            statistics[year][half_year]["median"] = {key: stats.median(lst) for key, lst in values.items()}
+            json_statistics[year][half_year]["average"] = {key: stats.mean(lst) for key, lst in values.items()}
+            json_statistics[year][half_year]["median"] = {key: stats.median(lst) for key, lst in values.items()}
 
-    return geojson_extended, statistics
-
-
-def extend_forecast_areas(statistics, year, half_year, statistic_name, statistic, geojson, population_statistics):
-    geojson_extended = copy.deepcopy(geojson)
-
-    # Check if file needs to be created
-    for feature in sorted(geojson_extended["features"], key=lambda feature: feature["properties"]["id"]):
-        feature_id = feature["properties"]["id"]
-        area_sqm = feature["properties"]["area"]
-        area_sqkm = area_sqm / 1_000_000
-        inhabitants = get_inhabitants(population_statistics, year, feature_id)
-
-        # Filter statistics
-        statistic_filtered = statistic[statistic["id"].astype(str).str.startswith(feature_id)]
-
-        # Check for missing data
-        if statistic_filtered.shape[0] == 0:
-            print(f"✗️ No forecast area data in {statistic_name} for id={feature_id}")
-            continue
-
-        # Blend data
-        blend_data_into_feature(feature=feature, area_sqkm=area_sqkm, inhabitants=inhabitants,
-                                statistic=statistic_filtered)
-
-        # Build structure
-        if year not in statistics:
-            statistics[year] = {}
-        if half_year not in statistics[year]:
-            statistics[year][half_year] = {}
-
-        # Add properties
-        statistics[year][half_year][feature_id] = feature["properties"]
-
-    # Calculate average and median values
-    for year, half_years in statistics.items():
-        for half_year, feature_ids in half_years.items():
-            values = {}
-
-            for feature_id, properties in feature_ids.items():
-                for property_name, property_value in properties.items():
-                    if property_name in statistic_properties:
-                        if property_name not in values:
-                            values[property_name] = []
-                        values[property_name].append(property_value)
-
-            statistics[year][half_year]["average"] = {key: stats.mean(lst) for key, lst in values.items()}
-            statistics[year][half_year]["median"] = {key: stats.median(lst) for key, lst in values.items()}
-
-    return geojson_extended, statistics
+    return geojson_extended, json_statistics
 
 
-def extend_district_regions(statistics, year, half_year, statistic_name, statistic, geojson, population_statistics):
-    geojson_extended = copy.deepcopy(geojson)
+def blend_data_into_feature(feature, statistics, area_sqkm, inhabitants):
+    # Add new properties
+    for property_name in statistic_properties:
+        add_property_with_modifiers(feature, statistics, property_name, area_sqkm, inhabitants)
 
-    # Check if file needs to be created
-    for feature in sorted(geojson_extended["features"], key=lambda feature: feature["properties"]["id"]):
-        feature_id = feature["properties"]["id"]
-        area_sqm = feature["properties"]["area"]
-        area_sqkm = area_sqm / 1_000_000
-        inhabitants = get_inhabitants(population_statistics, year, feature_id)
-
-        # Filter statistics
-        statistic_filtered = statistic[statistic["id"].astype(str).str.startswith(feature_id)]
-
-        # Check for missing data
-        if statistic_filtered.shape[0] == 0:
-            print(f"✗️ No district region data in {statistic_name} for id={feature_id}")
-            continue
-
-        # Blend data
-        feature = blend_data_into_feature(feature=feature, area_sqkm=area_sqkm, inhabitants=inhabitants,
-                                          statistic=statistic_filtered)
-
-        # Build structure
-        if year not in statistics:
-            statistics[year] = {}
-        if half_year not in statistics[year]:
-            statistics[year][half_year] = {}
-
-        # Add properties
-        statistics[year][half_year][feature_id] = feature["properties"]
-
-    # Calculate average and median values
-    for year, half_years in statistics.items():
-        for half_year, feature_ids in half_years.items():
-            values = {}
-
-            for feature_id, properties in feature_ids.items():
-                for property_name, property_value in properties.items():
-                    if property_name in statistic_properties:
-                        if property_name not in values:
-                            values[property_name] = []
-                        values[property_name].append(property_value)
-
-            statistics[year][half_year]["average"] = {key: stats.mean(lst) for key, lst in values.items()}
-            statistics[year][half_year]["median"] = {key: stats.median(lst) for key, lst in values.items()}
-
-    return geojson_extended, statistics
+    return feature
 
 
-def extend_planning_areas(statistics, year, half_year, statistic_name, statistic, geojson, population_statistics):
-    geojson_extended = copy.deepcopy(geojson)
+def add_property(feature, statistics, property_name):
+    if statistics is not None and property_name in statistics:
+        try:
+            feature["properties"][f"{property_name}"] = float(statistics[property_name].sum())
+        except ValueError:
+            feature["properties"][f"{property_name}"] = 0
 
-    # Check if file needs to be created
-    for feature in sorted(geojson_extended["features"], key=lambda feature: feature["properties"]["id"]):
-        feature_id = feature["properties"]["id"]
-        area_sqm = feature["properties"]["area"]
-        area_sqkm = area_sqm / 1_000_000
-        inhabitants = get_inhabitants(population_statistics, year, feature_id)
 
-        # Filter statistics
-        statistic_filtered = statistic[statistic["id"].astype(str).str.startswith(feature_id)]
+def add_property_with_modifiers(feature, statistics, property_name, total_area_sqkm, inhabitants):
+    if statistics is not None and property_name in statistics:
+        try:
+            feature["properties"][f"{property_name}"] = float(statistics[property_name].sum())
+            if total_area_sqkm is not None:
+                feature["properties"][f"{property_name}_per_sqkm"] = round(
+                    float(statistics[property_name].sum()) / total_area_sqkm, 2)
+            if inhabitants is not None:
+                feature["properties"][f"{property_name}_per_inhabitant"] = round(
+                    float(statistics[property_name].sum()) / inhabitants, 2)
+        except ValueError:
+            feature["properties"][f"{property_name}"] = 0
 
-        # Check for missing data
-        if statistic_filtered.shape[0] == 0:
-            print(f"✗️ No planning area data in {statistic_name} for id={feature_id}")
-            continue
+            if total_area_sqkm is not None:
+                feature["properties"][f"{property_name}_per_sqkm"] = 0
+            if inhabitants is not None:
+                feature["properties"][f"{property_name}_per_inhabitant"] = 0
+        except TypeError:
+            feature["properties"][f"{property_name}"] = 0
 
-        # Blend data
-        feature = blend_data_into_feature(feature=feature, area_sqkm=area_sqkm, inhabitants=inhabitants,
-                                          statistic=statistic_filtered)
-
-        # Build structure
-        if year not in statistics:
-            statistics[year] = {}
-        if half_year not in statistics[year]:
-            statistics[year][half_year] = {}
-
-        # Add properties
-        statistics[year][half_year][feature_id] = feature["properties"]
-
-    # Calculate average and median values
-    for year, half_years in statistics.items():
-        for half_year, feature_ids in half_years.items():
-            values = {}
-
-            for feature_id, properties in feature_ids.items():
-                for property_name, property_value in properties.items():
-                    if property_name in statistic_properties:
-                        if property_name not in values:
-                            values[property_name] = []
-                        values[property_name].append(property_value)
-
-            statistics[year][half_year]["average"] = {key: stats.mean(lst) for key, lst in values.items()}
-            statistics[year][half_year]["median"] = {key: stats.median(lst) for key, lst in values.items()}
-
-    return geojson_extended, statistics
-
+            if total_area_sqkm is not None:
+                feature["properties"][f"{property_name}_per_sqkm"] = 0
+            if inhabitants is not None:
+                feature["properties"][f"{property_name}_per_inhabitant"] = 0
 
 def load_population_statistics(file_path):
     with open(file=file_path, mode="r", encoding="utf-8") as json_file:
@@ -449,35 +263,3 @@ def get_inhabitants(population_statistics, year, feature_id):
     except KeyError:
         print(f"✗️ No population data for id={feature_id}")
         return None
-
-
-def blend_data_into_feature(feature, area_sqkm, inhabitants, statistic):
-    # Add new properties
-    for property_name in statistic_properties:
-        add_property_with_modifiers(feature, statistic, property_name, area_sqkm, inhabitants)
-
-    return feature
-
-
-def add_property_with_modifiers(feature, statistics, property_name, total_area_sqkm, total_inhabitants):
-    if statistics is not None and property_name in statistics:
-        try:
-            feature["properties"][f"{property_name}"] = float(statistics[property_name].sum())
-            if total_area_sqkm is not None:
-                feature["properties"][f"{property_name}_per_sqkm"] = round(
-                    float(statistics[property_name].sum()) / total_area_sqkm, 2)
-            if total_inhabitants is not None:
-                feature["properties"][f"{property_name}_per_inhabitant"] = round(
-                    float(statistics[property_name].sum()) / total_inhabitants, 2)
-        except ValueError:
-            feature["properties"][f"{property_name}"] = 0
-            if total_area_sqkm is not None:
-                feature["properties"][f"{property_name}_per_sqkm"] = 0
-            if total_inhabitants is not None:
-                feature["properties"][f"{property_name}_per_inhabitant"] = 0
-        except TypeError:
-            feature["properties"][f"{property_name}"] = 0
-            if total_area_sqkm is not None:
-                feature["properties"][f"{property_name}_per_sqkm"] = 0
-            if total_inhabitants is not None:
-                feature["properties"][f"{property_name}_per_inhabitant"] = 0
