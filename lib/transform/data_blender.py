@@ -228,7 +228,7 @@ def calculate_averages(year, half_year, geojson, csv_statistics, json_statistics
     json_statistics[year][half_year]["total"] = values
     json_statistics[year][half_year]["total_per_sqkm"] = \
         {property_name: total / total_sqkm for property_name, total in values.items()}
-    json_statistics[year][half_year]["total_per_inhabitants"] = \
+    json_statistics[year][half_year]["total_per_inhabitant"] = \
         {property_name: total / total_inhabitants for property_name, total in values.items()}
 
 
