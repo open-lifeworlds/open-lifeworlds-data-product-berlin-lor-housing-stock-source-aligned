@@ -54,9 +54,11 @@ def convert_file_to_csv(source_file_path, clean=False, quiet=False):
                          "residential_buildings", "residential_buildings_living_area",
                          "residential_buildings_apartments",
                          "residential_buildings_with_1_apartment", "residential_buildings_with_1_apartment_living_area",
-                         "residential_buildings_with_2_apartments", "residential_buildings_with_2_apartments_living_area",
+                         "residential_buildings_with_2_apartments",
+                         "residential_buildings_with_2_apartments_living_area",
                          "residential_buildings_with_2_apartments_apartments",
-                         "residential_buildings_with_3_apartments", "residential_buildings_with_3_apartments_living_area",
+                         "residential_buildings_with_3_apartments",
+                         "residential_buildings_with_3_apartments_living_area",
                          "residential_buildings_with_3_apartments_apartments"]
                 drop_columns = ["name", "_"]
             else:
@@ -70,10 +72,11 @@ def convert_file_to_csv(source_file_path, clean=False, quiet=False):
                 dataframes.append(
                     pd.read_excel(source_file_path, engine=engine, sheet_name=sheet, skiprows=skiprows,
                                   usecols=list(range(0, len(names))), names=names)
-                        .drop(columns=drop_columns, errors="ignore")
-                        .dropna()
-                        .replace("–", 0)
-                        .assign(id=lambda x: x["id"].astype(str).str.zfill(8))
+                    .drop(columns=drop_columns, errors="ignore")
+                    .dropna()
+                    .replace("–", 0)
+                    .astype(int)
+                    .assign(id=lambda x: x["id"].astype(str).str.zfill(8))
                 )
 
             # Concatenate data frames

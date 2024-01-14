@@ -1,9 +1,9 @@
 ---
-id: berlin-lor-housing-stock
-name: Berlin LOR Housing Stock
+id: berlin-lor-housing-stock-source-aligned
+name: Berlin LOR Housing Stock (source-aligned)
 metadata:
   ownership: Open Lifeworlds
-  domain: geodata
+  domain: statistics
   schema:
     - apartments: number of apartments
     - apartments_with_1_room: number of apartments with 1 room
@@ -28,21 +28,6 @@ metadata:
     - residential_buildings_with_3_apartments_apartments: apartments in residential buildings with 3 apartments
 description: This data products provides Berlin housing stock data on different LOR hierarchy levels
 input_ports:
-  - id: berlin-lor-geodata
-    metadata:
-      name: Berlin LOR geodata
-      author: Open Lifeworlds
-      url: https://github.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-geodata/tree/main/data
-      license: CC-BY-4.0
-      updated: 2023-07-22
-    files:
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-geodata/main/data/berlin-lor-districts/berlin-lor-districts.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-geodata/main/data/berlin-lor-forecast-areas-until-2020/berlin-lor-forecast-areas-until-2020.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-geodata/main/data/berlin-lor-forecast-areas-from-2021/berlin-lor-forecast-areas-from-2021.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-geodata/main/data/berlin-lor-district-regions-until-2020/berlin-lor-district-regions-until-2020.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-geodata/main/data/berlin-lor-district-regions-from-2021/berlin-lor-district-regions-from-2021.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-geodata/main/data/berlin-lor-planning-areas-until-2020/berlin-lor-planning-areas-until-2020.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-geodata/main/data/berlin-lor-planning-areas-from-2021/berlin-lor-planning-areas-from-2021.geojson
   - id: berlin-lor-housing-stock-2015-00
     metadata:
       name: Fortschreibung des Wohngebäude- und Wohnungsbestandes in Berlin 2015
@@ -115,15 +100,6 @@ input_ports:
       updated: 2023-07-18
     files:
       - https://download.statistik-berlin-brandenburg.de/fc2a6d8be1b10993/a2816dc7fb02/SB_F01-01-00_2022j01_BE.xlsx
-  - id: berlin-lor-population-statistics
-    metadata:
-      name: Berlin LOR population statistics
-      author: Open Lifeworlds
-      url: https://github.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-population/tree/main/data
-      license: CC-BY-4.0
-      updated: 2023-07-25
-    files:
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-population/main/data/berlin-lor-population-statistics/berlin-lor-population-statistics.json
 output_ports:
   - id: berlin-lor-housing-stock-csv
     metadata:
@@ -133,70 +109,19 @@ output_ports:
       license: CC-BY-4.0
       updated: 2023-07-31
     files:
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2015-00/berlin-lor-housing-stock-2015-00.csv
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2016-00/berlin-lor-housing-stock-2016-00.csv
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2017-00/berlin-lor-housing-stock-2017-00.csv
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2018-00/berlin-lor-housing-stock-2018-00.csv
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2019-00/berlin-lor-housing-stock-2019-00.csv
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2020-00/berlin-lor-housing-stock-2020-00.csv
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2021-00/berlin-lor-housing-stock-2021-00.csv
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2022-00/berlin-lor-housing-stock-2022-00.csv
-  - id: berlin-lor-housing-stock-geojson
-    metadata:
-      name: Berlin LOR housing stock geojson
-      author: Open Lifeworlds
-      url: https://github.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/tree/main/data
-      license: CC-BY-4.0
-      updated: 2023-07-31
-    files:
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2015-00/berlin-lor-housing-stock-2015-00-district-regions.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2015-00/berlin-lor-housing-stock-2015-00-districts.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2015-00/berlin-lor-housing-stock-2015-00-forecast-areas.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2015-00/berlin-lor-housing-stock-2015-00-planning-areas.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2016-00/berlin-lor-housing-stock-2016-00-district-regions.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2016-00/berlin-lor-housing-stock-2016-00-districts.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2016-00/berlin-lor-housing-stock-2016-00-forecast-areas.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2016-00/berlin-lor-housing-stock-2016-00-planning-areas.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2017-00/berlin-lor-housing-stock-2017-00-district-regions.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2017-00/berlin-lor-housing-stock-2017-00-districts.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2017-00/berlin-lor-housing-stock-2017-00-forecast-areas.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2017-00/berlin-lor-housing-stock-2017-00-planning-areas.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2018-00/berlin-lor-housing-stock-2018-00-district-regions.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2018-00/berlin-lor-housing-stock-2018-00-districts.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2018-00/berlin-lor-housing-stock-2018-00-forecast-areas.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2018-00/berlin-lor-housing-stock-2018-00-planning-areas.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2019-00/berlin-lor-housing-stock-2019-00-district-regions.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2019-00/berlin-lor-housing-stock-2019-00-districts.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2019-00/berlin-lor-housing-stock-2019-00-forecast-areas.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2019-00/berlin-lor-housing-stock-2019-00-planning-areas.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2020-00/berlin-lor-housing-stock-2020-00-district-regions.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2020-00/berlin-lor-housing-stock-2020-00-districts.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2020-00/berlin-lor-housing-stock-2020-00-forecast-areas.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2020-00/berlin-lor-housing-stock-2020-00-planning-areas.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2021-00/berlin-lor-housing-stock-2021-00-district-regions.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2021-00/berlin-lor-housing-stock-2021-00-districts.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2021-00/berlin-lor-housing-stock-2021-00-forecast-areas.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2021-00/berlin-lor-housing-stock-2021-00-planning-areas.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2022-00/berlin-lor-housing-stock-2022-00-district-regions.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2022-00/berlin-lor-housing-stock-2022-00-districts.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2022-00/berlin-lor-housing-stock-2022-00-forecast-areas.geojson
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-2022-00/berlin-lor-housing-stock-2022-00-planning-areas.geojson
-  - id: berlin-lor-housing-stock-statistics
-    metadata:
-      name: Berlin LOR housing stock statistics
-      author: Open Lifeworlds
-      url: https://github.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/tree/main/data
-      license: CC-BY-4.0
-      updated: 2023-07-31
-    files:
-      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock/main/data/berlin-lor-housing-stock-statistics/berlin-lor-housing-stock-statistics.json
+      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock-source-aligned/main/data/berlin-lor-housing-stock-2015-00/berlin-lor-housing-stock-2015-00.csv
+      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock-source-aligned/main/data/berlin-lor-housing-stock-2016-00/berlin-lor-housing-stock-2016-00.csv
+      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock-source-aligned/main/data/berlin-lor-housing-stock-2017-00/berlin-lor-housing-stock-2017-00.csv
+      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock-source-aligned/main/data/berlin-lor-housing-stock-2018-00/berlin-lor-housing-stock-2018-00.csv
+      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock-source-aligned/main/data/berlin-lor-housing-stock-2019-00/berlin-lor-housing-stock-2019-00.csv
+      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock-source-aligned/main/data/berlin-lor-housing-stock-2020-00/berlin-lor-housing-stock-2020-00.csv
+      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock-source-aligned/main/data/berlin-lor-housing-stock-2021-00/berlin-lor-housing-stock-2021-00.csv
+      - https://raw.githubusercontent.com/open-lifeworlds/open-lifeworlds-data-product-berlin-lor-housing-stock-source-aligned/main/data/berlin-lor-housing-stock-2022-00/berlin-lor-housing-stock-2022-00.csv
 metrics:
   - quality:
-      - completeness
   - operational:
-classification: consumer-aligned
+classification: source-aligned
 tags:
   - berlin
   - lor
-  - geodata
-  - population
+  - housing
